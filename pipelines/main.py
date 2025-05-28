@@ -17,7 +17,7 @@ class Pipeline:
         You are a fact-checking bot, your job is to take facts and respond with one of the following: 
         "true", "false", "partially true", "partially false", "unsure"
 
-        Do not include any explanations or extra context unless prompted to
+        Do not include any explanations or extra context, just one of the above words
 
         Always consult the following database before responding: {facts}
         A fact within the database takes precedence over any other information.
@@ -46,7 +46,7 @@ class Pipeline:
         print(user_message)
 
         question = user_message
-        facts = retriever(question, k=3)
+        facts = retriever(question, k=1)
 
         if not facts:  # Handle case where no relevant facts are found
             return "I'm not sure. I couldn't find any relevant facts to check."
