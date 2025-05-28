@@ -1,6 +1,6 @@
 # web-ui RAG pipeline
 
-A Python script that uses Langchain process a csv database and chain it to an `Ollama3.2` model, embed data and store it to a FAISS index using the `mxbai-embed-large` model
+A Python script that uses Langchain process a csv database and chain it to an `Ollama3.2` model, embed data and store it to a FAISS index using the `mxbai-embed-large` model.  
 this branch returns a simple true or false to all queries without any further explaining.
 
 ## requirements
