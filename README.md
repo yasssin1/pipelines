@@ -24,10 +24,10 @@ Install the required libraries using pip:
 ```bash
 pip install -r requirements.txt
 ```
-
-## usage
+## Usage
 
 Run the `boot.bat` file to use.
->**note:** do not close the terminals as that closes the servers.
 
-swaping the `vector.py` file with either `vector_chroma` or `vector_faiss` will swap the vector library used
+> **Note:** Do not close the terminals as that will close the servers.
+
+Swapping the `vector.py` file with either `vector_chroma.py` or `vector_faiss.py` will swap the vector library used.
