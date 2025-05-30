@@ -13,20 +13,19 @@ import pandas
 #using panda to read the database
 import numpy as np
 import json
-
+from pipelines.imports.data_retriever import retrieve_data
 #embedding model setup, model can be changed
 embeding = OllamaEmbeddings(model="mxbai-embed-large")
 
 #database info
 db_location = "./data/faiss_langchain_db"
 document_location = "./data/document_store.json"
-collection_name = "Facts_database"
 documents = []
 ids = []
 embeddings = [] #initialising embeddings list, so we can turn 
 
 #using pandas to read the database
-dataframe = pandas.read_csv("./pipelines/facts.csv")
+dataframe = pandas.read_csv("./pipelines/raw data/facts.csv")
 
 #document creation
 if os.path.exists(document_location):
@@ -40,9 +39,9 @@ else:
     #converting the csv into a document
     for i, row in dataframe.iterrows():
         document = Document(
-            page_content=row["Fact"] + " is " + row["fact check"],
-            metadata={"reliability": row["Reliability"], "date": row["Date"]},
-            id=str(i)
+            page_content=row["Fact"] + " is " + str(row["fact check"]),
+            #storing ids in metadata helps against errors when reconstructing file, if list order changes indexes willl be different
+            metadata={"reliability": row["Reliability"], "date": row["Date"], "id": str(i), "ref_id": row["reference id"]}, 
         )
         ids.append(str(i)) #saving backup of all ids
         documents.append(document)
@@ -97,10 +96,20 @@ def retriever(query, k=1):
     #we only need the index to search our documents list
     #collect the retrieved documents based on indexes 
     retrieved_documents = []
+    retrieved_data = []
+    seen_ref_ids = set()
     for idx in indexes [0]:
         if 0 <= idx < len(documents):
-            retrieved_documents.append(documents[int(idx)]) #retrieving ids and matching them to the documentjson
+            doc = documents[int(idx)]
+            retrieved_documents.append(doc) #retrieving ids and matching them to the documentjson
+            ref_id = doc.metadata["ref_id"]
+            if ref_id not in seen_ref_ids:
+                retrieved_data.append(retrieve_data(ref_id))
+                seen_ref_ids.add(ref_id)
+            else:
+                #duped refs not added
+                pass
         else:
             print(f"Warning: retrieved index {idx} out of range.") #case of empty results
     
-    return retrieved_documents
+    return retrieved_documents, retrieved_data

@@ -13,16 +13,27 @@ class Pipeline:
 
         model = OllamaLLM(model="llama3.2")
 
+
         template = """
-        You are a fact-checking bot, your job is to take facts and respond with one of the following: 
-        "true", "false", "partially true", "partially false", "unsure"
+        Your job is to answer the given question **only** based on the information provided below.
 
-        Do not include any explanations or extra context unless prompted to
+        You MUST respond with exactly one of the following answers:  
+        "response: true."  
+        or  
+        "response: false."
 
-        Always consult the following database before responding: {facts}
-        A fact within the database takes precedence over any other information.
+        After your response, provide an explanation that:
 
-        Here is the question to answer: {question}
+        - Is a clear rewriting of the information supporting your answer,
+        - Does NOT mention or refer to the source, text, or resources explicitly,
+        - Directly supports why your answer is true or false based solely on the provided information,
+        - Avoids any speculation, guesswork, or information not in the provided data.
+
+        Here is the question:  
+        {question}
+
+        Here is the information you must use to answer:  
+        {resources}
         """
 
 
@@ -46,19 +57,17 @@ class Pipeline:
         print(user_message)
 
         question = user_message
-        facts = retriever(question, k=4)
+        resources = retriever(question, k=1)
 
-        if not facts:  # Handle case where no relevant facts are found
+        if not resources:  #failsafe
             return "I'm not sure. I couldn't find any relevant facts to check."
+        resource_str = "\n".join(f"{res.metadata['source']}\n{res.page_content}" for res in resources) #transforming document to string
+        #debug
+        print("fetched resources:")
+        # print("\n\n".join("\n".join(r.page_content.splitlines()[:4]) for r in resources))
+        print(resource_str)
 
-
-        #extract the relevant content from the retrieved documents
-        fact_texts = [doc.page_content for doc in facts]
-        
-        #turn info to string before passing
-        facts_str = "\n".join(fact_texts)
-        print("fetched data:")
-        print(facts_str)
-        response = self.chain.invoke({"facts":facts_str, "question": question})
+        response = self.chain.invoke({"question": question, "resources": resource_str})
 
         return response
+        

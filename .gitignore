@@ -1,11 +1,7 @@
 __pycache__
 .env
-
 /litellm
-
-
-!pipelines/.gitignore
+data/
 .DS_Store
-
 .venv
 venv/

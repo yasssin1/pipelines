@@ -14,9 +14,20 @@ aiohttp==3.9.5
 httpx
 
 # added libraries
-langchain 
-langchain-ollama 
+langchain==0.3.25
+langchain-core==0.3.63
+langchain-community==0.3.24
+langchain-text-splitters==0.3.8
+langchain-ollama==0.3.3
 langchain-chroma 
-pandas 
 faiss-cpu 
 numpy
+langsmith==0.3.43
+tenacity==9.1.2
+
+#file reading
+python-docx
+PyMuPDF
+pandas 
+
+
