@@ -11,7 +11,8 @@ class Pipeline:
     async def on_startup(self):
 
 
-        model = OllamaLLM(model="llama3.2")
+        model = OllamaLLM(model="llama3.2",
+                          temperature = 0.1)
 
 
         template = """
@@ -57,7 +58,7 @@ class Pipeline:
         print(user_message)
 
         question = user_message
-        resources = retriever(question, k=1)
+        resources = retriever(question, k=2)
 
         if not resources:  #failsafe
             return "I'm not sure. I couldn't find any relevant facts to check."
